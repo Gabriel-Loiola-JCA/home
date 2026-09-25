@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Home · Links</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<style>
+:root{--ink:#eceeee;--muted:#878c8d;--line:#202223;--paper:#0b0c0d;--soft:#121415;--silver:#b9bfc0;--red:#ff7777;--red-bg:#2a1719;--gold:#f2c94c;--shadow:0 18px 48px #0000005c}
+*{box-sizing:border-box}
+body{margin:0;background:#050606;color:var(--ink);font:14px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;overflow-x:hidden}
+body:before{content:"";position:fixed;inset:-30% -10% auto;height:520px;background:radial-gradient(ellipse at 50% 0,#ffffff08,transparent 68%);pointer-events:none;animation:ambient 8s ease-in-out infinite alternate}
+svg.lucide{width:16px;height:16px;stroke-width:2;flex:none}
+.shell{max-width:1180px;margin:auto;padding:28px 28px 54px;position:relative}
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-bottom:22px;border-bottom:1px solid var(--line);animation:rise .65s both;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:14px}.logo{width:58px;height:50px;object-fit:contain;border-radius:10px;mix-blend-mode:screen}
+.brand h1{margin:0;font-size:22px;letter-spacing:-.03em}.brand .sub{color:var(--muted);font-size:12px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:#0c0d0e;color:var(--ink);border-radius:10px;padding:8px 12px;font:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:border-color .2s,background .2s}
+.btn:hover{border-color:#6c7273}.btn.primary{background:var(--ink);color:#0b0c0d;border-color:var(--ink)}.btn.primary:hover{background:#fff}
+.btn.danger{color:var(--red)}.btn.danger:hover{background:var(--red-bg);border-color:#5a2a2d}
+.badge{background:var(--red-bg);color:var(--red);border-radius:6px;padding:0 6px;font-size:11px}
+.intro{display:flex;justify-content:space-between;align-items:end;gap:24px;padding:32px 0 22px;animation:rise .65s .08s both;flex-wrap:wrap}
+.intro h2{margin:0 0 4px;font-size:30px;letter-spacing:-.045em}.intro p{margin:0;color:var(--muted)}
+.search{width:280px;max-width:100%;border:1px solid var(--line);border-radius:12px;padding:11px 13px;background:#0c0d0e;outline:0;color:var(--ink)}
+.search:focus{border-color:#8f9899;box-shadow:0 0 0 3px #c7cccd1c}
+.section-title{display:flex;align-items:center;justify-content:space-between;margin:26px 0 13px}.section-title h3{margin:0;font-size:17px;display:flex;align-items:center;gap:8px}.count{font-size:12px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.card{position:relative;display:flex;flex-direction:column;gap:14px;background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:18px;text-decoration:none;color:inherit;transition:border-color .25s,box-shadow .25s,transform .25s;animation:cardIn .5s both;cursor:pointer}
+.card:hover{border-color:var(--c,#6c7273);box-shadow:0 12px 28px #00000066;transform:translateY(-3px)}
+.card.dragging{opacity:.35}.card.over{outline:2px dashed var(--silver);outline-offset:3px}
+.card-top{display:flex;justify-content:space-between;align-items:start;gap:10px}
+.icon{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:color-mix(in srgb,var(--c) 16%,#121415);color:var(--c)}
+.icon svg.lucide{width:20px;height:20px}
+.tools{display:flex;gap:2px;opacity:0;transition:opacity .2s}.card:hover .tools,.card:focus-within .tools{opacity:1}
+.tool{border:0;background:none;color:var(--muted);padding:5px;border-radius:7px;cursor:pointer;display:grid;place-items:center}
+.tool:hover{background:#191b1c;color:var(--ink)}.tool.fav{opacity:1}.tool.fav.on{color:var(--gold)}.tool.fav.on svg{fill:var(--gold)}
+.card h4{margin:0;font-size:16px;word-break:break-word}.card .desc{color:var(--muted);font-size:12px;margin-top:2px}
+.host{color:#707677;font-size:12px;display:flex;align-items:center;gap:6px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;margin-top:auto}
+.empty{color:var(--muted);border:1px dashed var(--line);border-radius:16px;padding:26px;text-align:center;grid-column:1/-1}
+.footer{padding-top:24px;margin-top:40px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+dialog{background:#0b0c0d;color:var(--ink);border:1px solid #2b2e2f;border-radius:18px;box-shadow:var(--shadow);padding:0;width:min(520px,calc(100vw - 32px))}
+dialog::backdrop{background:#000000b0;backdrop-filter:blur(3px)}
+.dlg{padding:22px}.dlg h3{margin:0 0 16px;font-size:18px;display:flex;align-items:center;gap:8px}
+label{display:block;font-size:12px;color:var(--muted);margin:12px 0 5px;font-weight:600}
+.field{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#121415;outline:0;color:var(--ink);font:inherit}
+.field:focus{border-color:#8f9899}
+.swatches{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.sw{width:26px;height:26px;border-radius:8px;border:2px solid transparent;cursor:pointer}.sw.on{border-color:#fff}
+input[type=color]{width:34px;height:28px;border:0;background:none;padding:0;cursor:pointer}
+.icons{display:grid;grid-template-columns:repeat(auto-fill,minmax(38px,1fr));gap:5px;max-height:190px;overflow:auto;margin-top:7px;padding:2px}
+.ic{height:38px;border:1px solid var(--line);border-radius:9px;background:#121415;color:var(--silver);display:grid;place-items:center;cursor:pointer}
+.ic:hover{border-color:#6c7273}.ic.on{border-color:var(--ink);background:#26292a;color:#fff}
+.row{display:flex;gap:10px;align-items:center}.row .field{flex:1}
+.check{display:flex;align-items:center;gap:8px;margin-top:14px;color:var(--ink);font-size:13px;cursor:pointer}
+.dlg-foot{display:flex;justify-content:space-between;gap:8px;margin-top:20px;flex-wrap:wrap}
+.trash-list{display:flex;flex-direction:column;gap:8px;max-height:50vh;overflow:auto}
+.trash-item{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:12px;padding:10px}
+.trash-item .icon{width:32px;height:32px}.trash-item .t{flex:1;min-width:0}.trash-item .t div:last-child{color:var(--muted);font-size:11px}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);background:#eceeee;color:#0b0c0d;padding:10px 14px;border-radius:12px;font-weight:600;font-size:13px;opacity:0;transition:.25s;display:flex;gap:12px;align-items:center;z-index:9}
+.toast.show{opacity:1;transform:translateX(-50%)}.toast button{border:0;background:none;font:inherit;font-weight:800;cursor:pointer;text-decoration:underline}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}}@keyframes cardIn{from{opacity:0;transform:translateY(8px) scale(.98)}}@keyframes ambient{to{transform:translateY(40px)}}
+@media (max-width:600px){.shell{padding:20px 16px 40px}.intro h2{font-size:24px}.tools{opacity:1}.search{width:100%}}
+.lock{position:fixed;inset:0;z-index:20;background:#050606;display:grid;place-items:center;padding:16px}
+.lock[hidden]{display:none}.lock-box{width:min(380px,100%);background:linear-gradient(120deg,#151718,#0d0e0f);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:26px;animation:rise .5s both;text-align:center}
+.lock-box .logo{width:72px;height:60px;margin:0 auto 8px;display:block}.lock-box h2{margin:0 0 4px;font-size:22px;letter-spacing:-.03em}.lock-box p{margin:0 0 16px;color:var(--muted);font-size:13px}
+.lock-box .field{margin-bottom:10px;text-align:center}.lock-box .btn{width:100%;justify-content:center;padding:11px}.lock-err{color:var(--red);font-size:12px;min-height:18px;margin-top:8px}
+.lock-imp{margin-top:14px;font-size:12px;color:var(--muted);display:flex;flex-direction:column;gap:6px;text-align:left}
+</style>
+</head>
+<body>
+<div class="lock" id="lock"><form class="lock-box" id="lockForm" autocomplete="off">
+  <img class="logo" src="logo-revenue-branca.png" alt="Revenue">
+  <h2 id="lockTitle">Bem-vindo</h2><p id="lockSub"></p>
+  <input class="field" type="password" id="pw1" placeholder="Senha" required>
+  <input class="field" type="password" id="pw2" placeholder="Confirme a senha">
+  <div class="lock-imp" id="lockImp"><span>Links iniciais (opcional): selecione o arquivo <b>links-iniciais.json</b></span><input type="file" id="pwFile" accept="application/json"></div>
+  <button class="btn primary" style="margin-top:14px" id="lockGo">Entrar</button>
+  <div class="lock-err" id="lockErr"></div>
+</form></div>
+<main class="shell">
+  <header class="top">
+    <div class="brand"><img class="logo" src="logo-revenue-branca.png" alt="Revenue"><div><h1>Home</h1><div class="sub">Seus links, do seu jeito</div></div></div>
+    <div class="actions">
+      <button class="btn primary" id="addBtn"><i data-lucide="plus"></i>Novo link</button>
+      <button class="btn" id="trashBtn"><i data-lucide="trash-2"></i>Lixeira <span class="badge" id="trashCount">0</span></button>
+      <button class="btn" id="moreBtn" title="Backup"><i data-lucide="settings-2"></i></button>
+    </div>
+  </header>
+
+  <section class="intro">
+    <div><h2 id="greet">Olá</h2><p>Clique num card para abrir. Passe o mouse para editar, favoritar ou excluir. Arraste para reordenar.</p></div>
+    <input class="search" id="search" type="search" placeholder="Buscar link…  ( / )">
+  </section>
+
+  <div id="favWrap"><div class="section-title"><h3><i data-lucide="star"></i>Favoritos</h3><span class="count" id="favCount"></span></div><section class="grid" id="favGrid"></section></div>
+  <div class="section-title"><h3><i data-lucide="layout-grid"></i>Todos os links</h3><span class="count" id="allCount"></span></div>
+  <section class="grid" id="allGrid"></section>
+
+  <footer class="footer"><span>Salvo automaticamente neste navegador.</span><span id="clock"></span></footer>
+</main>
+
+<dialog id="editDlg"><form class="dlg" method="dialog" id="editForm">
+  <h3 id="editTitle">Editar link</h3>
+  <label for="fName">Nome</label><input class="field" id="fName" required>
+  <label for="fUrl">Link (URL)</label><input class="field" id="fUrl" required placeholder="https://…">
+  <label for="fDesc">Descrição (opcional)</label><input class="field" id="fDesc">
+  <label>Cor</label><div class="swatches" id="swatches"></div>
+  <label for="iconSearch">Ícone (Lucide)</label>
+  <div class="row"><div class="icon" id="iconPreview"></div><input class="field" id="iconSearch" placeholder="Buscar ícone: chart, file, bus…"></div>
+  <div class="icons" id="iconGrid"></div>
+  <label class="check"><input type="checkbox" id="fFav"> Favorito</label>
+  <div class="dlg-foot">
+    <button type="button" class="btn danger" id="delBtn"><i data-lucide="trash-2"></i>Excluir</button>
+    <div class="actions"><button type="button" class="btn" id="cancelBtn">Cancelar</button><button class="btn primary" id="saveBtn" value="save">Salvar</button></div>
+  </div>
+</form></dialog>
+
+<dialog id="trashDlg"><div class="dlg">
+  <h3><i data-lucide="trash-2"></i>Lixeira</h3>
+  <div class="trash-list" id="trashList"></div>
+  <div class="dlg-foot"><button class="btn danger" id="emptyBtn"><i data-lucide="flame"></i>Esvaziar lixeira</button><button class="btn" data-close>Fechar</button></div>
+</div></dialog>
+
+<dialog id="moreDlg"><div class="dlg">
+  <h3><i data-lucide="settings-2"></i>Backup e configurações</h3>
+  <p style="color:var(--muted);margin:0 0 6px">Os links ficam salvos neste navegador. Exporte um backup para levar a outro computador.</p>
+  <label for="fGreet">Seu nome (saudação)</label><input class="field" id="fGreet" placeholder="Ex.: Gabriel">
+  <div class="dlg-foot">
+    <div class="actions"><button class="btn" id="exportBtn"><i data-lucide="download"></i>Exportar</button><button class="btn" id="importBtn"><i data-lucide="upload"></i>Importar</button><input type="file" id="importFile" accept="application/json" hidden></div>
+    <div class="actions"><button class="btn" id="passBtn"><i data-lucide="key-round"></i>Trocar senha</button><button class="btn danger" id="lockBtn"><i data-lucide="lock"></i>Bloquear</button><button class="btn" data-close>Fechar</button></div>
+  </div>
+</div></dialog>
+
+<div class="toast" id="toast"><span id="toastMsg"></span><button id="toastUndo">Desfazer</button></div>
+
+<script>
+const KEY='home-links-v1';
+const COLORS=['#b9bfc0','#f2c94c','#72d17a','#4fd1c5','#60a5fa','#a78bfa','#f472b6','#ff7777','#fb923c'];
+const uid=()=>Math.random().toString(36).slice(2,10);
+const fresh=()=>({name:'Fábio',links:[],trash:[]});
+let S=fresh();
+const save=()=>{persist().catch(()=>{})};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const kebab=n=>n.replace(/([a-z0-9])([A-Z])/g,'$1-$2').replace(/([A-Za-z])(\d)/g,'$1-$2').toLowerCase();
+const ALL_ICONS=Object.keys(lucide.icons).map(kebab);
+const ico=n=>`<i data-lucide="${esc(n)}"></i>`;
+const host=u=>{try{return new URL(u).host}catch{return u}};
+const paint=()=>lucide.createIcons();
+
+let q='';
+function card(l){
+  return `<a class="card" href="${esc(l.url)}" target="_blank" rel="noopener" draggable="true" data-id="${l.id}" style="--c:${esc(l.color)}">
+   <div class="card-top"><div class="icon">${ico(l.icon)}</div>
+    <div class="tools">
+     <button class="tool fav ${l.fav?'on':''}" data-act="fav" title="Favoritar">${ico('star')}</button>
+     <button class="tool" data-act="edit" title="Editar">${ico('pencil')}</button>
+     <button class="tool" data-act="del" title="Mover para a lixeira">${ico('trash-2')}</button>
+    </div></div>
+   <div><h4>${esc(l.name)}</h4>${l.desc?`<div class="desc">${esc(l.desc)}</div>`:''}</div>
+   <div class="host">${ico('link')}${esc(host(l.url))}</div></a>`;
+}
+function render(){
+  const m=l=>!q||(l.name+' '+l.desc+' '+l.url).toLowerCase().includes(q);
+  const all=S.links.filter(m),fav=all.filter(l=>l.fav);
+  $('#favWrap').hidden=!fav.length;
+  $('#favGrid').innerHTML=fav.map(card).join('');
+  $('#allGrid').innerHTML=all.map(card).join('')||`<div class="empty">${q?'Nenhum link encontrado.':'Nenhum link ainda. Clique em “Novo link”.'}</div>`;
+  $('#favCount').textContent=fav.length+(fav.length==1?' favorito':' favoritos');
+  $('#allCount').textContent=all.length+(all.length==1?' link':' links');
+  $('#trashCount').textContent=S.trash.length;
+  const h=new Date().getHours();
+  $('#greet').textContent=(h<12?'Bom dia':h<18?'Boa tarde':'Boa noite')+(S.name?', '+S.name:'');
+  paint();
+}
+
+// toast / undo
+let undoFn=null,tt;
+function toast(msg,undo){$('#toastMsg').textContent=msg;undoFn=undo;$('#toastUndo').hidden=!undo;$('#toast').classList.add('show');clearTimeout(tt);tt=setTimeout(()=>$('#toast').classList.remove('show'),4500)}
+$('#toastUndo').onclick=()=>{undoFn&&undoFn();undoFn=null;$('#toast').classList.remove('show')};
+
+function trashLink(id){
+  const i=S.links.findIndex(l=>l.id===id);if(i<0)return;
+  const [l]=S.links.splice(i,1);l.deletedAt=Date.now();l.pos=i;S.trash.unshift(l);save();render();
+  toast(`“${l.name}” foi para a lixeira`,()=>restore(l.id));
+}
+function restore(id){
+  const i=S.trash.findIndex(l=>l.id===id);if(i<0)return;
+  const [l]=S.trash.splice(i,1);const p=Math.min(l.pos??S.links.length,S.links.length);delete l.deletedAt;delete l.pos;
+  S.links.splice(p,0,l);save();render();renderTrash();
+}
+
+// card clicks
+document.addEventListener('click',e=>{
+  const b=e.target.closest('.tool');if(!b)return;
+  e.preventDefault();e.stopPropagation();
+  const id=b.closest('.card').dataset.id,l=S.links.find(x=>x.id===id);
+  if(b.dataset.act==='fav'){l.fav=!l.fav;save();render()}
+  if(b.dataset.act==='edit')openEdit(l);
+  if(b.dataset.act==='del')trashLink(id);
+});
+
+// drag reorder
+let dragId=null;
+document.addEventListener('dragstart',e=>{const c=e.target.closest?.('.card');if(!c)return;dragId=c.dataset.id;c.classList.add('dragging');e.dataTransfer.effectAllowed='move'});
+document.addEventListener('dragend',()=>{dragId=null;document.querySelectorAll('.dragging,.over').forEach(x=>x.classList.remove('dragging','over'))});
+document.addEventListener('dragover',e=>{const c=e.target.closest?.('.card');if(!c||!dragId)return;e.preventDefault();document.querySelectorAll('.over').forEach(x=>x!==c&&x.classList.remove('over'));if(c.dataset.id!==dragId)c.classList.add('over')});
+document.addEventListener('drop',e=>{const c=e.target.closest?.('.card');if(!c||!dragId)return;e.preventDefault();
+  const from=S.links.findIndex(l=>l.id===dragId),to=S.links.findIndex(l=>l.id===c.dataset.id);if(from<0||to<0||from===to)return;
+  const [m]=S.links.splice(from,1);S.links.splice(to,0,m);save();render()});
+
+// edit dialog
+let editing=null,selIcon='link',selColor=COLORS[0];
+function renderSwatches(){
+  $('#swatches').innerHTML=COLORS.map(c=>`<button type="button" class="sw ${c===selColor?'on':''}" style="background:${c}" data-c="${c}"></button>`).join('')+
+   `<input type="color" id="customColor" value="${selColor}" title="Cor personalizada">`;
+  $('#customColor').oninput=e=>{selColor=e.target.value;preview();document.querySelectorAll('.sw').forEach(s=>s.classList.remove('on'))};
+  updatePreviewColor();
+}
+$('#swatches').addEventListener('click',e=>{const s=e.target.closest('.sw');if(!s)return;selColor=s.dataset.c;renderSwatches()});
+function updatePreviewColor(){$('#iconPreview').style.setProperty('--c',selColor)}
+function preview(){$('#iconPreview').innerHTML=ico(selIcon);updatePreviewColor();paint()}
+function renderIcons(){
+  const t=$('#iconSearch').value.trim().toLowerCase();
+  let list=t?ALL_ICONS.filter(n=>n.includes(t)):ALL_ICONS;
+  list=list.slice(0,240);if(!list.includes(selIcon)&&!t)list.unshift(selIcon);
+  $('#iconGrid').innerHTML=list.map(n=>`<button type="button" class="ic ${n===selIcon?'on':''}" data-i="${n}" title="${n}">${ico(n)}</button>`).join('')||'<span style="color:var(--muted);font-size:12px">Nenhum ícone.</span>';
+  paint();
+  document.querySelectorAll('#iconGrid .ic').forEach(b=>{if(!b.querySelector('svg'))b.remove()});
+}
+$('#iconSearch').oninput=renderIcons;
+$('#iconGrid').addEventListener('click',e=>{const b=e.target.closest('.ic');if(!b)return;selIcon=b.dataset.i;document.querySelectorAll('.ic.on').forEach(x=>x.classList.remove('on'));b.classList.add('on');preview()});
+function openEdit(l){
+  editing=l||null;
+  $('#editTitle').textContent=l?'Editar link':'Novo link';
+  $('#fName').value=l?.name||'';$('#fUrl').value=l?.url||'';$('#fDesc').value=l?.desc||'';$('#fFav').checked=!!l?.fav;
+  selIcon=l?.icon||'link';selColor=l?.color||COLORS[0];$('#iconSearch').value='';
+  $('#delBtn').hidden=!l;
+  renderSwatches();preview();renderIcons();$('#editDlg').showModal();$('#fName').focus();
+}
+$('#editForm').addEventListener('submit',e=>{
+  let url=$('#fUrl').value.trim();if(url&&!/^[a-z]+:\/\//i.test(url))url='https://'+url;
+  const d={name:$('#fName').value.trim(),url,desc:$('#fDesc').value.trim(),icon:selIcon,color:selColor,fav:$('#fFav').checked};
+  if(editing)Object.assign(editing,d);else S.links.push({id:uid(),...d});
+  save();render();toast(editing?'Link atualizado':'Link adicionado');
+});
+$('#cancelBtn').onclick=()=>$('#editDlg').close();
+$('#delBtn').onclick=()=>{$('#editDlg').close();trashLink(editing.id)};
+$('#addBtn').onclick=()=>openEdit(null);
+
+// trash
+function renderTrash(){
+  $('#trashList').innerHTML=S.trash.length?S.trash.map(l=>`<div class="trash-item" style="--c:${esc(l.color)}"><div class="icon">${ico(l.icon)}</div>
+   <div class="t"><div>${esc(l.name)}</div><div>${esc(host(l.url))} · ${new Date(l.deletedAt).toLocaleDateString('pt-BR')}</div></div>
+   <button class="btn" data-restore="${l.id}" title="Restaurar">${ico('undo-2')}</button>
+   <button class="btn danger" data-kill="${l.id}" title="Excluir para sempre">${ico('x')}</button></div>`).join('')
+   :'<div class="empty">A lixeira está vazia.</div>';
+  $('#emptyBtn').hidden=!S.trash.length;paint();
+}
+$('#trashList').addEventListener('click',e=>{
+  const r=e.target.closest('[data-restore]'),k=e.target.closest('[data-kill]');
+  if(r){restore(r.dataset.restore);toast('Link restaurado')}
+  if(k&&confirm('Excluir este link para sempre?')){S.trash=S.trash.filter(l=>l.id!==k.dataset.kill);save();render();renderTrash()}
+});
+$('#emptyBtn').onclick=()=>{if(confirm('Esvaziar a lixeira? Não dá para desfazer.')){S.trash=[];save();render();renderTrash()}};
+$('#trashBtn').onclick=()=>{renderTrash();$('#trashDlg').showModal()};
+
+// settings / backup
+$('#moreBtn').onclick=()=>{$('#fGreet').value=S.name||'';$('#moreDlg').showModal()};
+$('#fGreet').oninput=e=>{S.name=e.target.value.trim();save();render()};
+$('#exportBtn').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(S,null,2)],{type:'application/json'}));a.download='home-links-backup.json';a.click()};
+$('#importBtn').onclick=()=>$('#importFile').click();
+$('#importFile').onchange=async e=>{try{const d=JSON.parse(await e.target.files[0].text());if(!Array.isArray(d.links))throw 0;S={name:'Fábio',trash:[],...d};save();render();toast('Backup importado')}catch{alert('Arquivo inválido.')}e.target.value=''};
+document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>b.closest('dialog').close());
+
+// search + shortcuts
+$('#search').oninput=e=>{q=e.target.value.trim().toLowerCase();render()};
+document.addEventListener('keydown',e=>{if(e.key==='/'&&!/INPUT|TEXTAREA/.test(document.activeElement.tagName)){e.preventDefault();$('#search').focus()}});
+const tick=()=>$('#clock').textContent=new Date().toLocaleString('pt-BR',{weekday:'long',day:'2-digit',month:'long',hour:'2-digit',minute:'2-digit'});
+tick();setInterval(tick,30000);
+// ---- senha + criptografia (AES-GCM, chave derivada por PBKDF2) ----
+const K_AUTH="home-auth",K_DATA="home-data",K_KEY="home-key";
+const b64=b=>btoa(String.fromCharCode(...new Uint8Array(b))),unb64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+const ls={get:k=>{try{return localStorage.getItem(k)}catch{return null}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch{}},del:k=>{try{localStorage.removeItem(k)}catch{}}};
+let CK=null;
+const SEED={"salt":"yWarTzaqRUCtYRGdUfEh4g==","iv":"ahZo+Uo6dU1yFlV4","ct":"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"};
+async function derive(pw,salt){const base=await crypto.subtle.importKey("raw",new TextEncoder().encode(pw),"PBKDF2",false,["deriveKey"]);
+  return crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:250000,hash:"SHA-256"},base,{name:"AES-GCM",length:256},true,["encrypt","decrypt"])}
+async function enc(key,obj){const iv=crypto.getRandomValues(new Uint8Array(12));const ct=await crypto.subtle.encrypt({name:"AES-GCM",iv},key,new TextEncoder().encode(JSON.stringify(obj)));return JSON.stringify({iv:b64(iv),ct:b64(ct)})}
+async function dec(key,s){const {iv,ct}=JSON.parse(s);return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:"AES-GCM",iv:unb64(iv)},key,unb64(ct))))}
+async function persist(){if(CK)ls.set(K_DATA,await enc(CK,S))}
+async function setPassword(pw){const salt=crypto.getRandomValues(new Uint8Array(16));CK=await derive(pw,salt);
+  ls.set(K_AUTH,JSON.stringify({salt:b64(salt),check:await enc(CK,"ok")}));ls.set(K_KEY,b64(await crypto.subtle.exportKey("raw",CK)));await persist()}
+async function unlock(){S={...fresh(),...await dec(CK,ls.get(K_DATA))};$("#lock").hidden=true;render()}
+function showLock(mode){
+  const setup=mode==="setup";$("#lock").hidden=false;$("#lockErr").textContent="";$("#pw1").value=$("#pw2").value="";
+  $("#lockTitle").textContent=setup?"Definir senha":mode==="first"?"Bem-vindo, Fábio":"Bom te ver de novo";
+  $("#lockSub").textContent=setup?"Crie uma senha para proteger sua Home. Ela fica lembrada neste computador.":"Digite sua senha para abrir.";
+  $("#pw2").hidden=!setup;$("#pw2").required=setup;$("#lockImp").hidden=!setup;$("#lockGo").textContent=setup?"Criar senha e entrar":"Entrar";
+  $("#lockForm").dataset.mode=mode;$("#pw1").focus();
+}
+$("#lockForm").addEventListener("submit",async e=>{e.preventDefault();const pw=$("#pw1").value,mode=e.target.dataset.mode;$("#lockErr").textContent="";
+  try{
+    if(mode==="setup"||mode==="change"){
+      if(pw.length<4)return $("#lockErr").textContent="Use pelo menos 4 caracteres.";
+      if(pw!==$("#pw2").value)return $("#lockErr").textContent="As senhas não conferem.";
+      const f=$("#pwFile").files[0];
+      if(f){const d=JSON.parse(await f.text());if(!Array.isArray(d.links))throw new Error("arquivo");S={...fresh(),...d}}
+      await setPassword(pw);$("#lock").hidden=true;render();toast(mode==="change"?"Senha alterada":"Senha criada");
+    }else if(mode==="first"){
+      const key=await derive(pw,unb64(SEED.salt));
+      try{S={...fresh(),...JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:"AES-GCM",iv:unb64(SEED.iv)},key,unb64(SEED.ct))))}}catch{return $("#lockErr").textContent="Senha incorreta."}
+      await setPassword(pw);$("#lock").hidden=true;render();
+    }else{
+      const a=JSON.parse(ls.get(K_AUTH));const key=await derive(pw,unb64(a.salt));
+      try{await dec(key,a.check)}catch{return $("#lockErr").textContent="Senha incorreta."}
+      CK=key;ls.set(K_KEY,b64(await crypto.subtle.exportKey("raw",key)));await unlock();
+    }
+  }catch(err){$("#lockErr").textContent=err.message==="arquivo"?"Arquivo de links inválido.":"Não foi possível salvar neste navegador."}
+});
+$("#lockBtn").onclick=()=>{ls.del(K_KEY);CK=null;S=fresh();$("#moreDlg").close();render();showLock("unlock")};
+$("#passBtn").onclick=()=>{$("#moreDlg").close();showLock("setup");$("#lockForm").dataset.mode="change";$("#lockTitle").textContent="Trocar senha";$("#lockSub").textContent="Escolha a nova senha.";$("#lockImp").hidden=true;$("#lockGo").textContent="Salvar nova senha"};
+(async function boot(){
+  if(!ls.get(K_AUTH))return showLock("first");
+  const k=ls.get(K_KEY);
+  if(k){try{CK=await crypto.subtle.importKey("raw",unb64(k),"AES-GCM",true,["encrypt","decrypt"]);return await unlock()}catch{ls.del(K_KEY);CK=null}}
+  showLock("unlock");
+})();
+</script>
+</body>
+</html>
