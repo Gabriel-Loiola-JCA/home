@@ -66,6 +66,22 @@ input[type=color]{width:34px;height:28px;border:0;background:none;padding:0;curs
 .lock[hidden]{display:none}.lock-box{width:min(380px,100%);background:linear-gradient(120deg,#151718,#0d0e0f);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:26px;animation:rise .5s both;text-align:center}
 .lock-box .logo{width:72px;height:60px;margin:0 auto 8px;display:block}.lock-box h2{margin:0 0 4px;font-size:22px;letter-spacing:-.03em}.lock-box p{margin:0 0 16px;color:var(--muted);font-size:13px}
 .lock-box .field{margin-bottom:10px;text-align:center}.lock-box .btn{width:100%;justify-content:center;padding:11px}.lock-err{color:var(--red);font-size:12px;min-height:18px;margin-top:8px}
+[hidden]{display:none!important}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin:0 0 6px;overflow-x:auto;scrollbar-width:none}
+.tab{display:flex;align-items:center;gap:7px;border:0;background:none;color:var(--muted);font:inherit;font-weight:600;padding:10px 14px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
+.tab:hover{color:var(--ink)}.tab.on{color:var(--ink);border-bottom-color:var(--ink)}
+.pane[hidden]{display:none}
+.drop{border:1.5px dashed #303435;border-radius:16px;padding:26px;text-align:center;color:var(--muted);cursor:pointer;transition:.2s;margin-top:20px}
+.drop:hover,.drop.over{border-color:var(--silver);background:#0e1011;color:var(--ink)}.drop svg.lucide{width:26px;height:26px;margin-bottom:6px}
+.list{display:flex;flex-direction:column;gap:8px}
+.item{display:flex;align-items:center;gap:12px;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:12px 14px;transition:border-color .2s}
+.item:hover{border-color:#3a3e3f}.item .icon{width:36px;height:36px;border-radius:10px}.item .t{flex:1;min-width:0}
+.item .t b{display:block;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.item .t span{color:var(--muted);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
+.item .tools{opacity:1}.mono{font-family:ui-monospace,Consolas,monospace;letter-spacing:.04em}
+.vault-lock{max-width:380px;margin:40px auto;text-align:center}.vault-lock svg.lucide{width:30px;height:30px;color:var(--silver)}
+.vault-lock h3{margin:10px 0 4px}.vault-lock p{color:var(--muted);margin:0 0 16px;font-size:13px}.vault-lock .field{margin-bottom:10px;text-align:center}.vault-lock .btn{width:100%;justify-content:center}
+.pw-row{display:flex;gap:6px}.pw-row .field{flex:1}
+.note-s{color:var(--muted);font-size:12px;margin:10px 0 0;display:flex;gap:6px;align-items:center}
 </style>
 </head>
 <body>
@@ -79,24 +95,52 @@ input[type=color]{width:34px;height:28px;border:0;background:none;padding:0;curs
 </form></div>
 <main class="shell">
   <header class="top">
-    <div class="brand"><img class="logo" src="logo-revenue-branca.png" alt="Revenue"><div><h1>Home</h1><div class="sub">Seus links, do seu jeito</div></div></div>
+    <div class="brand"><img class="logo" src="logo-revenue-branca.png" alt="Revenue"><div><h1>Home</h1><div class="sub">Links, arquivos e senhas — só seus</div></div></div>
     <div class="actions">
-      <button class="btn primary" id="addBtn"><i data-lucide="plus"></i>Novo link</button>
+      <button class="btn primary" id="addBtn"><i data-lucide="plus"></i><span id="addLbl">Novo link</span></button>
       <button class="btn" id="trashBtn"><i data-lucide="trash-2"></i>Lixeira <span class="badge" id="trashCount">0</span></button>
       <button class="btn" id="moreBtn" title="Backup"><i data-lucide="settings-2"></i></button>
     </div>
   </header>
 
   <section class="intro">
-    <div><h2 id="greet">Olá</h2><p>Clique num card para abrir. Passe o mouse para editar, favoritar ou excluir. Arraste para reordenar.</p></div>
-    <input class="search" id="search" type="search" placeholder="Buscar link…  ( / )">
+    <div><h2 id="greet">Olá</h2><p id="hint"></p></div>
+    <input class="search" id="search" type="search" placeholder="Buscar…  ( / )">
   </section>
+  <nav class="tabs">
+    <button class="tab on" data-tab="links"><i data-lucide="layout-grid"></i>Links</button>
+    <button class="tab" data-tab="files"><i data-lucide="folder-lock"></i>Arquivos</button>
+    <button class="tab" data-tab="vault"><i data-lucide="key-round"></i>Senhas</button>
+  </nav>
+  <div class="pane" id="pane-links">
 
   <div id="favWrap"><div class="section-title"><h3><i data-lucide="star"></i>Favoritos</h3><span class="count" id="favCount"></span></div><section class="grid" id="favGrid"></section></div>
   <div class="section-title"><h3><i data-lucide="layout-grid"></i>Todos os links</h3><span class="count" id="allCount"></span></div>
   <section class="grid" id="allGrid"></section>
+  </div>
 
-  <footer class="footer"><span>Salvo automaticamente neste navegador.</span><span id="clock"></span></footer>
+  <div class="pane" id="pane-files" hidden>
+    <div class="drop" id="drop"><i data-lucide="upload-cloud"></i><div><b>Arraste arquivos aqui</b> ou clique para escolher</div><div style="font-size:12px;margin-top:3px">Criptografados antes de serem salvos</div></div>
+    <input type="file" id="fileIn" multiple hidden>
+    <div class="section-title"><h3><i data-lucide="folder-lock"></i>Meus arquivos</h3><span class="count" id="fileCount"></span></div>
+    <div class="list" id="fileList"></div>
+  </div>
+
+  <div class="pane" id="pane-vault" hidden>
+    <form class="vault-lock" id="vaultLock" autocomplete="off">
+      <i data-lucide="shield-check"></i><h3 id="vTitle">Cofre de senhas</h3><p id="vSub"></p>
+      <input class="field" type="password" id="vp1" placeholder="Senha mestra" required>
+      <input class="field" type="password" id="vp2" placeholder="Confirme a senha mestra">
+      <button class="btn primary" id="vGo">Abrir cofre</button><div class="lock-err" id="vErr"></div>
+    </form>
+    <div id="vaultBody" hidden>
+      <div class="section-title"><h3><i data-lucide="key-round"></i>Minhas senhas</h3><span style="display:flex;gap:8px;align-items:center"><span class="count" id="vCount"></span><button class="btn" id="vLockBtn"><i data-lucide="lock"></i>Trancar</button></span></div>
+      <div class="list" id="vaultList"></div>
+      <p class="note-s"><i data-lucide="timer"></i>O cofre tranca sozinho após 5 minutos sem uso ou ao trocar de aba.</p>
+    </div>
+  </div>
+
+  <footer class="footer"><span>Tudo criptografado e salvo apenas neste navegador.</span><span id="clock"></span></footer>
 </main>
 
 <dialog id="editDlg"><form class="dlg" method="dialog" id="editForm">
@@ -113,6 +157,17 @@ input[type=color]{width:34px;height:28px;border:0;background:none;padding:0;curs
     <button type="button" class="btn danger" id="delBtn"><i data-lucide="trash-2"></i>Excluir</button>
     <div class="actions"><button type="button" class="btn" id="cancelBtn">Cancelar</button><button class="btn primary" id="saveBtn" value="save">Salvar</button></div>
   </div>
+</form></dialog>
+
+<dialog id="pwDlg"><form class="dlg" method="dialog" id="pwForm" autocomplete="off">
+  <h3 id="pwTitle">Nova senha</h3>
+  <label for="eTitle">Nome</label><input class="field" id="eTitle" required placeholder="Ex.: E-mail corporativo">
+  <label for="eUser">Usuário / e-mail</label><input class="field" id="eUser">
+  <label for="ePass">Senha</label><div class="pw-row"><input class="field mono" type="password" id="ePass"><button type="button" class="btn" id="eShow" title="Mostrar"><i data-lucide="eye"></i></button><button type="button" class="btn" id="eGen" title="Gerar senha forte"><i data-lucide="wand-sparkles"></i></button></div>
+  <label for="eUrl">Site (opcional)</label><input class="field" id="eUrl" placeholder="https://…">
+  <label for="eNotes">Observações</label><textarea class="field" id="eNotes" rows="3"></textarea>
+  <div class="dlg-foot"><button type="button" class="btn danger" id="eDel"><i data-lucide="trash-2"></i>Excluir</button>
+  <div class="actions"><button type="button" class="btn" data-close>Cancelar</button><button class="btn primary">Salvar</button></div></div>
 </form></dialog>
 
 <dialog id="trashDlg"><div class="dlg">
@@ -137,7 +192,7 @@ input[type=color]{width:34px;height:28px;border:0;background:none;padding:0;curs
 const KEY='home-links-v1';
 const COLORS=['#b9bfc0','#f2c94c','#72d17a','#4fd1c5','#60a5fa','#a78bfa','#f472b6','#ff7777','#fb923c'];
 const uid=()=>Math.random().toString(36).slice(2,10);
-const fresh=()=>({name:'Fábio',links:[],trash:[]});
+const fresh=()=>({name:'Fábio',links:[],trash:[],files:[]});
 let S=fresh();
 const save=()=>{persist().catch(()=>{})};
 const $=s=>document.querySelector(s);
@@ -289,7 +344,9 @@ async function derive(pw,salt){const base=await crypto.subtle.importKey("raw",ne
 async function enc(key,obj){const iv=crypto.getRandomValues(new Uint8Array(12));const ct=await crypto.subtle.encrypt({name:"AES-GCM",iv},key,new TextEncoder().encode(JSON.stringify(obj)));return JSON.stringify({iv:b64(iv),ct:b64(ct)})}
 async function dec(key,s){const {iv,ct}=JSON.parse(s);return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:"AES-GCM",iv:unb64(iv)},key,unb64(ct))))}
 async function persist(){if(CK)ls.set(K_DATA,await enc(CK,S))}
-async function setPassword(pw){const salt=crypto.getRandomValues(new Uint8Array(16));CK=await derive(pw,salt);
+async function setPassword(pw){const old=CK,salt=crypto.getRandomValues(new Uint8Array(16));const nk=await derive(pw,salt);
+  if(old)for(const f of S.files||[]){const r=await idb("get",f.id);if(r){const bytes=await crypto.subtle.decrypt({name:"AES-GCM",iv:r.iv},old,r.ct);const iv=crypto.getRandomValues(new Uint8Array(12));await idb("put",{id:f.id,iv,ct:await crypto.subtle.encrypt({name:"AES-GCM",iv},nk,bytes)})}}
+  CK=nk;
   ls.set(K_AUTH,JSON.stringify({salt:b64(salt),check:await enc(CK,"ok")}));ls.set(K_KEY,b64(await crypto.subtle.exportKey("raw",CK)));await persist()}
 async function unlock(){S={...fresh(),...await dec(CK,ls.get(K_DATA))};$("#lock").hidden=true;render()}
 function showLock(mode){
@@ -316,8 +373,95 @@ $("#lockForm").addEventListener("submit",async e=>{e.preventDefault();const pw=$
     }
   }catch(err){$("#lockErr").textContent=err.message==="arquivo"?"Arquivo de links inválido.":"Não foi possível salvar neste navegador."}
 });
-$("#lockBtn").onclick=()=>{ls.del(K_KEY);CK=null;S=fresh();$("#moreDlg").close();render();showLock("unlock")};
+$("#lockBtn").onclick=()=>{lockVault();ls.del(K_KEY);CK=null;S=fresh();$("#moreDlg").close();render();showLock("unlock")};
 $("#passBtn").onclick=()=>{$("#moreDlg").close();showLock("setup");$("#lockForm").dataset.mode="change";$("#lockTitle").textContent="Trocar senha";$("#lockSub").textContent="Escolha a nova senha.";$("#lockGo").textContent="Salvar nova senha"};
+
+// ---- abas ----
+let TAB="links";
+const HINTS={links:"Clique num card para abrir. Passe o mouse para editar, favoritar ou excluir. Arraste para reordenar.",files:"Guarde documentos com segurança. Tudo é criptografado antes de ser salvo neste computador.",vault:"Cofre com senha mestra própria. Tranca sozinho quando você sai."};
+const ADD={links:"Novo link",files:"Enviar arquivo",vault:"Nova senha"};
+function setTab(t){TAB=t;if(t!=="vault")lockVault();
+  document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("on",b.dataset.tab===t));
+  ["links","files","vault"].forEach(p=>$("#pane-"+p).hidden=p!==t);
+  $("#hint").textContent=HINTS[t];$("#addLbl").textContent=ADD[t];$("#trashBtn").hidden=t!=="links";
+  $("#search").value="";q="";render();renderFiles();renderVault();}
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
+$("#addBtn").onclick=()=>TAB==="links"?openEdit(null):TAB==="files"?$("#fileIn").click():VK?openPw(null):$("#vp1").focus();
+$("#search").addEventListener("input",()=>{renderFiles();renderVault()});
+
+// ---- arquivos (IndexedDB, criptografados com a chave da Home) ----
+function idb(op,v){return new Promise((res,rej)=>{const o=indexedDB.open("home-files",1);o.onupgradeneeded=()=>o.result.createObjectStore("f",{keyPath:"id"});
+  o.onerror=()=>rej(o.error);o.onsuccess=()=>{const tx=o.result.transaction("f",op==="get"?"readonly":"readwrite").objectStore("f");const r=op==="get"?tx.get(v):op==="put"?tx.put(v):tx.delete(v);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}})}
+const fsize=n=>n<1024?n+" B":n<1048576?(n/1024).toFixed(0)+" KB":(n/1048576).toFixed(1)+" MB";
+const ficon=f=>/pdf/.test(f.type)?"file-text":/image/.test(f.type)?"image":/sheet|excel|csv/.test(f.type+f.name)?"file-spreadsheet":/word|document/.test(f.type)?"file-type":/zip|rar|7z/.test(f.name)?"file-archive":"file";
+async function addFiles(list){let ok=0;for(const f of list){try{
+  const iv=crypto.getRandomValues(new Uint8Array(12)),id=uid();
+  await idb("put",{id,iv,ct:await crypto.subtle.encrypt({name:"AES-GCM",iv},CK,await f.arrayBuffer())});
+  S.files.push({id,name:f.name,size:f.size,type:f.type||"application/octet-stream",added:Date.now()});ok++;
+}catch(e){alert("Não foi possível salvar "+f.name+". O navegador pode estar sem espaço.")}}
+  save();renderFiles();if(ok)toast(ok+(ok==1?" arquivo salvo":" arquivos salvos"))}
+function renderFiles(){if(TAB!=="files")return;
+  const fl=(S.files||[]).filter(f=>!q||f.name.toLowerCase().includes(q)).sort((a,b)=>b.added-a.added);
+  $("#fileCount").textContent=fl.length+(fl.length==1?" arquivo":" arquivos");
+  $("#fileList").innerHTML=fl.map(f=>`<div class="item" style="--c:#b9bfc0"><div class="icon">${ico(ficon(f))}</div>
+   <div class="t"><b>${esc(f.name)}</b><span>${fsize(f.size)} · ${new Date(f.added).toLocaleDateString("pt-BR")}</span></div>
+   <div class="tools"><button class="tool" data-fo="open" data-id="${f.id}" title="Abrir">${ico("eye")}</button><button class="tool" data-fo="down" data-id="${f.id}" title="Baixar">${ico("download")}</button>
+   <button class="tool" data-fo="ren" data-id="${f.id}" title="Renomear">${ico("pencil")}</button><button class="tool" data-fo="del" data-id="${f.id}" title="Excluir">${ico("trash-2")}</button></div></div>`).join("")
+   ||`<div class="empty">${q?"Nenhum arquivo encontrado.":"Nenhum arquivo ainda."}</div>`;paint()}
+$("#fileList").addEventListener("click",async e=>{const b=e.target.closest("[data-fo]");if(!b)return;const f=S.files.find(x=>x.id===b.dataset.id);
+  if(b.dataset.fo==="ren"){const n=prompt("Novo nome:",f.name);if(n&&n.trim()){f.name=n.trim();save();renderFiles()}return}
+  if(b.dataset.fo==="del"){if(confirm('Excluir "'+f.name+'" para sempre?')){await idb("del",f.id);S.files=S.files.filter(x=>x!==f);save();renderFiles()}return}
+  const w=b.dataset.fo==="open"?window.open("","_blank"):null;
+  const r=await idb("get",f.id);const url=URL.createObjectURL(new Blob([await crypto.subtle.decrypt({name:"AES-GCM",iv:r.iv},CK,r.ct)],{type:f.type}));
+  if(w)w.location=url;else{const a=document.createElement("a");a.href=url;a.download=f.name;a.click()}
+  setTimeout(()=>URL.revokeObjectURL(url),60000)});
+$("#drop").onclick=()=>$("#fileIn").click();
+$("#fileIn").onchange=e=>{addFiles([...e.target.files]);e.target.value=""};
+$("#drop").ondragover=e=>{e.preventDefault();$("#drop").classList.add("over")};
+$("#drop").ondragleave=()=>$("#drop").classList.remove("over");
+$("#drop").ondrop=e=>{e.preventDefault();$("#drop").classList.remove("over");if(e.dataTransfer.files.length)addFiles([...e.dataTransfer.files])};
+
+// ---- cofre de senhas (senha mestra própria, nunca fica salva) ----
+const K_VAULT="home-vault";let VK=null,V=null,vTimer;
+function vaultTouch(){clearTimeout(vTimer);if(VK)vTimer=setTimeout(()=>{lockVault();toast("Cofre trancado por inatividade")},300000)}
+function lockVault(){VK=null;V=null;clearTimeout(vTimer);renderVault()}
+async function vSave(){if(VK){const v=JSON.parse(ls.get(K_VAULT)||"{}");ls.set(K_VAULT,JSON.stringify({...v,data:await enc(VK,V)}))}}
+function renderVault(){if(TAB!=="vault")return;const has=!!ls.get(K_VAULT);
+  $("#vaultLock").hidden=!!VK;$("#vaultBody").hidden=!VK;
+  if(!VK){$("#vTitle").textContent=has?"Cofre trancado":"Criar cofre de senhas";
+    $("#vSub").textContent=has?"Digite a senha mestra do cofre.":"Escolha uma senha mestra forte (mín. 8 caracteres). Ela não é salva em lugar nenhum: se esquecer, o cofre não pode ser recuperado.";
+    $("#vp2").hidden=has;$("#vp2").required=!has;$("#vGo").textContent=has?"Abrir cofre":"Criar cofre";return}
+  const l=V.items.filter(i=>!q||(i.title+" "+i.user+" "+i.url).toLowerCase().includes(q)).sort((a,b)=>a.title.localeCompare(b.title));
+  $("#vCount").textContent=l.length+(l.length==1?" senha":" senhas");
+  $("#vaultList").innerHTML=l.map(i=>`<div class="item" style="--c:#f2c94c"><div class="icon">${ico("key-round")}</div>
+   <div class="t"><b>${esc(i.title)}</b><span>${esc(i.user||"—")}${i.url?" · "+esc(host(i.url)):""}</span></div>
+   <div class="tools"><button class="tool" data-vo="user" data-id="${i.id}" title="Copiar usuário">${ico("user")}</button><button class="tool" data-vo="pass" data-id="${i.id}" title="Copiar senha">${ico("copy")}</button>
+   ${i.url?`<button class="tool" data-vo="go" data-id="${i.id}" title="Abrir site">${ico("external-link")}</button>`:""}<button class="tool" data-vo="edit" data-id="${i.id}" title="Ver / editar">${ico("pencil")}</button></div></div>`).join("")
+   ||`<div class="empty">${q?"Nada encontrado.":"Nenhuma senha salva ainda. Clique em “Nova senha”."}</div>`;paint()}
+$("#vaultLock").addEventListener("submit",async e=>{e.preventDefault();const pw=$("#vp1").value,raw=ls.get(K_VAULT);$("#vErr").textContent="";
+  try{if(!raw){if(pw.length<8)return $("#vErr").textContent="Use pelo menos 8 caracteres.";if(pw!==$("#vp2").value)return $("#vErr").textContent="As senhas não conferem.";
+      const salt=crypto.getRandomValues(new Uint8Array(16));VK=await derive(pw,salt);V={items:[]};ls.set(K_VAULT,JSON.stringify({salt:b64(salt)}));await vSave()}
+    else{const v=JSON.parse(raw);const k=await derive(pw,unb64(v.salt));try{V=await dec(k,v.data)}catch{return $("#vErr").textContent="Senha mestra incorreta."}VK=k}
+    $("#vp1").value=$("#vp2").value="";vaultTouch();renderVault()}catch{$("#vErr").textContent="Não foi possível abrir o cofre."}});
+$("#vLockBtn").onclick=lockVault;
+let copyT;
+$("#vaultList").addEventListener("click",async e=>{const b=e.target.closest("[data-vo]");if(!b)return;vaultTouch();const i=V.items.find(x=>x.id===b.dataset.id);
+  if(b.dataset.vo==="edit")return openPw(i);if(b.dataset.vo==="go")return window.open(i.url,"_blank","noopener");
+  try{await navigator.clipboard.writeText(b.dataset.vo==="user"?i.user:i.pass);toast(b.dataset.vo==="user"?"Usuário copiado":"Senha copiada — sai da área de transferência em 30s");
+    if(b.dataset.vo==="pass"){clearTimeout(copyT);copyT=setTimeout(()=>navigator.clipboard.writeText("").catch(()=>{}),30000)}}catch{toast("Não foi possível copiar")}});
+let pwEditing=null;
+function openPw(i){pwEditing=i;vaultTouch();$("#pwTitle").textContent=i?"Editar senha":"Nova senha";
+  $("#eTitle").value=i?.title||"";$("#eUser").value=i?.user||"";$("#ePass").value=i?.pass||"";$("#eUrl").value=i?.url||"";$("#eNotes").value=i?.notes||"";
+  $("#ePass").type="password";$("#eDel").hidden=!i;$("#pwDlg").showModal();$("#eTitle").focus()}
+$("#eShow").onclick=()=>$("#ePass").type=$("#ePass").type==="password"?"text":"password";
+$("#eGen").onclick=()=>{const c="ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%&*?";const r=crypto.getRandomValues(new Uint32Array(18));$("#ePass").value=[...r].map(n=>c[n%c.length]).join("");$("#ePass").type="text"};
+$("#pwForm").addEventListener("submit",async()=>{if(!VK)return;let url=$("#eUrl").value.trim();if(url&&!/^[a-z]+:\/\//i.test(url))url="https://"+url;
+  const d={title:$("#eTitle").value.trim(),user:$("#eUser").value.trim(),pass:$("#ePass").value,url,notes:$("#eNotes").value};
+  if(pwEditing)Object.assign(pwEditing,d);else V.items.push({id:uid(),...d});await vSave();renderVault();toast("Senha salva")});
+$("#eDel").onclick=async()=>{if(!confirm("Excluir esta senha para sempre?"))return;V.items=V.items.filter(x=>x!==pwEditing);await vSave();$("#pwDlg").close();renderVault()};
+document.addEventListener("visibilitychange",()=>{if(document.hidden&&VK){lockVault();$("#pwDlg").open&&$("#pwDlg").close()}});
+["click","keydown"].forEach(ev=>document.addEventListener(ev,()=>VK&&vaultTouch()));
+setTab("links");
 (async function boot(){
   if(!ls.get(K_AUTH))return showLock("first");
   const k=ls.get(K_KEY);
