@@ -66,7 +66,6 @@ input[type=color]{width:34px;height:28px;border:0;background:none;padding:0;curs
 .lock[hidden]{display:none}.lock-box{width:min(380px,100%);background:linear-gradient(120deg,#151718,#0d0e0f);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:26px;animation:rise .5s both;text-align:center}
 .lock-box .logo{width:72px;height:60px;margin:0 auto 8px;display:block}.lock-box h2{margin:0 0 4px;font-size:22px;letter-spacing:-.03em}.lock-box p{margin:0 0 16px;color:var(--muted);font-size:13px}
 .lock-box .field{margin-bottom:10px;text-align:center}.lock-box .btn{width:100%;justify-content:center;padding:11px}.lock-err{color:var(--red);font-size:12px;min-height:18px;margin-top:8px}
-.lock-imp{margin-top:14px;font-size:12px;color:var(--muted);display:flex;flex-direction:column;gap:6px;text-align:left}
 </style>
 </head>
 <body>
@@ -75,7 +74,6 @@ input[type=color]{width:34px;height:28px;border:0;background:none;padding:0;curs
   <h2 id="lockTitle">Bem-vindo</h2><p id="lockSub"></p>
   <input class="field" type="password" id="pw1" placeholder="Senha" required>
   <input class="field" type="password" id="pw2" placeholder="Confirme a senha">
-  <div class="lock-imp" id="lockImp"><span>Links iniciais (opcional): selecione o arquivo <b>links-iniciais.json</b></span><input type="file" id="pwFile" accept="application/json"></div>
   <button class="btn primary" style="margin-top:14px" id="lockGo">Entrar</button>
   <div class="lock-err" id="lockErr"></div>
 </form></div>
@@ -298,7 +296,7 @@ function showLock(mode){
   const setup=mode==="setup";$("#lock").hidden=false;$("#lockErr").textContent="";$("#pw1").value=$("#pw2").value="";
   $("#lockTitle").textContent=setup?"Definir senha":mode==="first"?"Bem-vindo, Fábio":"Bom te ver de novo";
   $("#lockSub").textContent=setup?"Crie uma senha para proteger sua Home. Ela fica lembrada neste computador.":"Digite sua senha para abrir.";
-  $("#pw2").hidden=!setup;$("#pw2").required=setup;$("#lockImp").hidden=!setup;$("#lockGo").textContent=setup?"Criar senha e entrar":"Entrar";
+  $("#pw2").hidden=!setup;$("#pw2").required=setup;$("#lockGo").textContent=setup?"Criar senha e entrar":"Entrar";
   $("#lockForm").dataset.mode=mode;$("#pw1").focus();
 }
 $("#lockForm").addEventListener("submit",async e=>{e.preventDefault();const pw=$("#pw1").value,mode=e.target.dataset.mode;$("#lockErr").textContent="";
@@ -306,8 +304,6 @@ $("#lockForm").addEventListener("submit",async e=>{e.preventDefault();const pw=$
     if(mode==="setup"||mode==="change"){
       if(pw.length<4)return $("#lockErr").textContent="Use pelo menos 4 caracteres.";
       if(pw!==$("#pw2").value)return $("#lockErr").textContent="As senhas não conferem.";
-      const f=$("#pwFile").files[0];
-      if(f){const d=JSON.parse(await f.text());if(!Array.isArray(d.links))throw new Error("arquivo");S={...fresh(),...d}}
       await setPassword(pw);$("#lock").hidden=true;render();toast(mode==="change"?"Senha alterada":"Senha criada");
     }else if(mode==="first"){
       const key=await derive(pw,unb64(SEED.salt));
@@ -321,7 +317,7 @@ $("#lockForm").addEventListener("submit",async e=>{e.preventDefault();const pw=$
   }catch(err){$("#lockErr").textContent=err.message==="arquivo"?"Arquivo de links inválido.":"Não foi possível salvar neste navegador."}
 });
 $("#lockBtn").onclick=()=>{ls.del(K_KEY);CK=null;S=fresh();$("#moreDlg").close();render();showLock("unlock")};
-$("#passBtn").onclick=()=>{$("#moreDlg").close();showLock("setup");$("#lockForm").dataset.mode="change";$("#lockTitle").textContent="Trocar senha";$("#lockSub").textContent="Escolha a nova senha.";$("#lockImp").hidden=true;$("#lockGo").textContent="Salvar nova senha"};
+$("#passBtn").onclick=()=>{$("#moreDlg").close();showLock("setup");$("#lockForm").dataset.mode="change";$("#lockTitle").textContent="Trocar senha";$("#lockSub").textContent="Escolha a nova senha.";$("#lockGo").textContent="Salvar nova senha"};
 (async function boot(){
   if(!ls.get(K_AUTH))return showLock("first");
   const k=ls.get(K_KEY);
