@@ -131,7 +131,7 @@ input[type=color]{width:34px;height:28px;border:0;background:none;padding:0;curs
       <i data-lucide="shield-check"></i><h3 id="vTitle">Cofre de senhas</h3><p id="vSub"></p>
       <input class="field" type="password" id="vp1" placeholder="Senha mestra" required>
       <input class="field" type="password" id="vp2" placeholder="Confirme a senha mestra">
-      <button class="btn primary" id="vGo">Abrir cofre</button><div class="lock-err" id="vErr"></div>
+      <button class="btn primary" id="vGo">Abrir cofre</button><button type="button" class="btn" id="vBack" style="margin-top:8px" hidden>Voltar</button><div class="lock-err" id="vErr"></div>
     </form>
     <div id="vaultBody" hidden>
       <div class="section-title"><h3><i data-lucide="key-round"></i>Minhas senhas</h3><span style="display:flex;gap:8px;align-items:center"><span class="count" id="vCount"></span><button class="btn" id="vLockBtn"><i data-lucide="lock"></i>Trancar</button></span></div>
@@ -378,7 +378,7 @@ $("#passBtn").onclick=()=>{$("#moreDlg").close();showLock("setup");$("#lockForm"
 
 // ---- abas ----
 let TAB="links";
-const HINTS={links:"Clique num card para abrir. Passe o mouse para editar, favoritar ou excluir. Arraste para reordenar.",files:"Guarde documentos com segurança. Tudo é criptografado antes de ser salvo neste computador.",vault:"Cofre com senha mestra própria. Tranca sozinho quando você sai."};
+const HINTS={links:"Clique num card para abrir. Passe o mouse para editar, favoritar ou excluir. Arraste para reordenar.",files:"Guarde documentos com segurança. Tudo é criptografado antes de ser salvo neste computador.",vault:"Cofre online, criptografado com sua senha mestra. Abre no computador e no celular."};
 const ADD={links:"Novo link",files:"Enviar arquivo",vault:"Nova senha"};
 function setTab(t){TAB=t;if(t!=="vault")lockVault();
   document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("on",b.dataset.tab===t));
@@ -421,16 +421,35 @@ $("#drop").ondragover=e=>{e.preventDefault();$("#drop").classList.add("over")};
 $("#drop").ondragleave=()=>$("#drop").classList.remove("over");
 $("#drop").ondrop=e=>{e.preventDefault();$("#drop").classList.remove("over");if(e.dataTransfer.files.length)addFiles([...e.dataTransfer.files])};
 
-// ---- cofre de senhas (senha mestra própria, nunca fica salva) ----
-const K_VAULT="home-vault";let VK=null,V=null,vTimer;
+// ---- cofre de senhas: Firestore, criptografado no aparelho com a senha mestra ----
+// O id do documento é derivado da senha mestra (sem a senha não se acha o cofre) e o conteúdo é AES-GCM.
+const FB={projectId:"home-fabio",apiKey:"AIzaSyBaWXeQnr3xKznkLwMP_6zJXyfmJ8W9HdA"};
+const K_VAULT="home-vault",K_VSEEN="home-vault-online";
+let VK=null,V=null,VSALT=null,VID=null,VUPD=null,vTimer,vBusy=false,vCreate=false;
+const FS=id=>`https://firestore.googleapis.com/v1/projects/${FB.projectId}/databases/(default)/documents/vaults/${id}?key=${FB.apiKey}`;
 function vaultTouch(){clearTimeout(vTimer);if(VK)vTimer=setTimeout(()=>{lockVault();toast("Cofre trancado por inatividade")},300000)}
-function lockVault(){VK=null;V=null;clearTimeout(vTimer);renderVault()}
-async function vSave(){if(VK){const v=JSON.parse(ls.get(K_VAULT)||"{}");ls.set(K_VAULT,JSON.stringify({...v,data:await enc(VK,V)}))}}
-function renderVault(){if(TAB!=="vault")return;const has=!!ls.get(K_VAULT);
+function lockVault(){VK=null;V=null;VID=null;VUPD=null;clearTimeout(vTimer);renderVault()}
+async function vaultId(pw){const base=await crypto.subtle.importKey("raw",new TextEncoder().encode(pw),"PBKDF2",false,["deriveBits"]);
+  const bits=await crypto.subtle.deriveBits({name:"PBKDF2",salt:new TextEncoder().encode("home-fabio-vault-id"),iterations:250000,hash:"SHA-256"},base,256);
+  return [...new Uint8Array(await crypto.subtle.digest("SHA-256",bits))].map(x=>x.toString(16).padStart(2,"0")).join("")}
+async function vGet(id){const r=await fetch(FS(id),{cache:"no-store"});if(r.status===404)return null;if(!r.ok)throw new Error("Sem conexão com o cofre online.");
+  const j=await r.json();VUPD=j.updateTime;return {salt:j.fields.salt.stringValue,data:j.fields.data.stringValue}}
+async function vPut(id,key,salt,obj,create){
+  const pre=create?"&currentDocument.exists=false":VUPD?"&currentDocument.updateTime="+encodeURIComponent(VUPD):"";
+  const r=await fetch(FS(id)+pre,{method:"PATCH",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({fields:{salt:{stringValue:b64(salt)},data:{stringValue:await enc(key,obj)},updated:{integerValue:String(Date.now())}}})});
+  if(!r.ok)throw new Error(r.status===400||r.status===409||r.status===412?"conflito":"rede");
+  VUPD=(await r.json()).updateTime}
+async function vSave(){if(!VK)return false;
+  try{await vPut(VID,VK,VSALT,V,false);return true}
+  catch(e){alert(e.message==="conflito"?"O cofre foi alterado em outro aparelho. Tranque e abra de novo para ver a versão mais recente.":"Sem conexão: não foi possível salvar no cofre online.");return false}}
+function renderVault(){if(TAB!=="vault")return;
   $("#vaultLock").hidden=!!VK;$("#vaultBody").hidden=!VK;
-  if(!VK){$("#vTitle").textContent=has?"Cofre trancado":"Criar cofre de senhas";
-    $("#vSub").textContent=has?"Digite a senha mestra do cofre.":"Escolha uma senha mestra forte (mín. 8 caracteres). Ela não é salva em lugar nenhum: se esquecer, o cofre não pode ser recuperado.";
-    $("#vp2").hidden=has;$("#vp2").required=!has;$("#vGo").textContent=has?"Abrir cofre":"Criar cofre";return}
+  if(!VK){const ready=FB.projectId&&FB.apiKey;
+    $("#vTitle").textContent=!ready?"Cofre online não configurado":vCreate?"Criar cofre de senhas":"Cofre trancado";
+    $("#vSub").textContent=!ready?"Falta configurar o Firebase.":vCreate?"Nenhum cofre com essa senha. Confirme para criar um novo — use uma senha forte (mín. 10 caracteres). Ela não é salva em lugar nenhum: se esquecer, o cofre não pode ser recuperado.":"Digite a senha mestra do cofre. Funciona no computador e no celular.";
+    $("#vp2").hidden=!vCreate;$("#vp2").required=vCreate;$("#vp1").disabled=$("#vGo").disabled=!ready||vBusy;
+    $("#vGo").textContent=vBusy?"Abrindo…":vCreate?"Criar cofre":"Abrir cofre";$("#vBack").hidden=!vCreate;return}
   const l=V.items.filter(i=>!q||(i.title+" "+i.user+" "+i.url).toLowerCase().includes(q)).sort((a,b)=>a.title.localeCompare(b.title));
   $("#vCount").textContent=l.length+(l.length==1?" senha":" senhas");
   $("#vaultList").innerHTML=l.map(i=>`<div class="item" style="--c:#f2c94c"><div class="icon">${ico("key-round")}</div>
@@ -438,11 +457,26 @@ function renderVault(){if(TAB!=="vault")return;const has=!!ls.get(K_VAULT);
    <div class="tools"><button class="tool" data-vo="user" data-id="${i.id}" title="Copiar usuário">${ico("user")}</button><button class="tool" data-vo="pass" data-id="${i.id}" title="Copiar senha">${ico("copy")}</button>
    ${i.url?`<button class="tool" data-vo="go" data-id="${i.id}" title="Abrir site">${ico("external-link")}</button>`:""}<button class="tool" data-vo="edit" data-id="${i.id}" title="Ver / editar">${ico("pencil")}</button></div></div>`).join("")
    ||`<div class="empty">${q?"Nada encontrado.":"Nenhuma senha salva ainda. Clique em “Nova senha”."}</div>`;paint()}
-$("#vaultLock").addEventListener("submit",async e=>{e.preventDefault();const pw=$("#vp1").value,raw=ls.get(K_VAULT);$("#vErr").textContent="";
-  try{if(!raw){if(pw.length<8)return $("#vErr").textContent="Use pelo menos 8 caracteres.";if(pw!==$("#vp2").value)return $("#vErr").textContent="As senhas não conferem.";
-      const salt=crypto.getRandomValues(new Uint8Array(16));VK=await derive(pw,salt);V={items:[]};ls.set(K_VAULT,JSON.stringify({salt:b64(salt)}));await vSave()}
-    else{const v=JSON.parse(raw);const k=await derive(pw,unb64(v.salt));try{V=await dec(k,v.data)}catch{return $("#vErr").textContent="Senha mestra incorreta."}VK=k}
-    $("#vp1").value=$("#vp2").value="";vaultTouch();renderVault()}catch{$("#vErr").textContent="Não foi possível abrir o cofre."}});
+$("#vBack").onclick=()=>{vCreate=false;$("#vErr").textContent="";$("#vp2").value="";renderVault()};
+$("#vaultLock").addEventListener("submit",async e=>{e.preventDefault();if(vBusy)return;const pw=$("#vp1").value;$("#vErr").textContent="";
+  if(vCreate&&pw.length<10)return $("#vErr").textContent="Use pelo menos 10 caracteres.";
+  if(vCreate&&pw!==$("#vp2").value)return $("#vErr").textContent="As senhas não conferem.";
+  vBusy=true;renderVault();
+  try{
+    const id=await vaultId(pw);
+    if(!vCreate){
+      const doc=await vGet(id);
+      if(!doc){vCreate=true;if(ls.get(K_VSEEN))$("#vErr").textContent="Senha mestra incorreta? Se já tem um cofre, volte e confira a senha.";throw null}
+      VSALT=unb64(doc.salt);const k=await derive(pw,VSALT);V=await dec(k,doc.data);VK=k;VID=id;
+    }else{
+      let items=[];const local=ls.get(K_VAULT);  // traz as senhas do cofre antigo deste computador, se a senha mestra for a mesma
+      if(local){try{const lv=JSON.parse(local);items=(await dec(await derive(pw,unb64(lv.salt)),lv.data)).items||[]}catch{}}
+      VSALT=crypto.getRandomValues(new Uint8Array(16));const k=await derive(pw,VSALT);V={items};
+      await vPut(id,k,VSALT,V,true);VK=k;VID=id;vCreate=false;if(items.length){ls.del(K_VAULT);toast(items.length+" senhas trazidas do cofre antigo")}
+    }
+    ls.set(K_VSEEN,"1");$("#vp1").value=$("#vp2").value="";vaultTouch();
+  }catch(err){if(err)$("#vErr").textContent=err.message==="conflito"?"Já existe um cofre com essa senha.":err.message==="rede"?"Sem conexão com o cofre online.":err.message||"Não foi possível abrir o cofre."}
+  vBusy=false;renderVault()});
 $("#vLockBtn").onclick=lockVault;
 let copyT;
 $("#vaultList").addEventListener("click",async e=>{const b=e.target.closest("[data-vo]");if(!b)return;vaultTouch();const i=V.items.find(x=>x.id===b.dataset.id);
@@ -457,8 +491,11 @@ $("#eShow").onclick=()=>$("#ePass").type=$("#ePass").type==="password"?"text":"p
 $("#eGen").onclick=()=>{const c="ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%&*?";const r=crypto.getRandomValues(new Uint32Array(18));$("#ePass").value=[...r].map(n=>c[n%c.length]).join("");$("#ePass").type="text"};
 $("#pwForm").addEventListener("submit",async()=>{if(!VK)return;let url=$("#eUrl").value.trim();if(url&&!/^[a-z]+:\/\//i.test(url))url="https://"+url;
   const d={title:$("#eTitle").value.trim(),user:$("#eUser").value.trim(),pass:$("#ePass").value,url,notes:$("#eNotes").value};
-  if(pwEditing)Object.assign(pwEditing,d);else V.items.push({id:uid(),...d});await vSave();renderVault();toast("Senha salva")});
-$("#eDel").onclick=async()=>{if(!confirm("Excluir esta senha para sempre?"))return;V.items=V.items.filter(x=>x!==pwEditing);await vSave();$("#pwDlg").close();renderVault()};
+  const prev=pwEditing?{...pwEditing}:null;
+  if(pwEditing)Object.assign(pwEditing,d);else V.items.push({id:uid(),...d});renderVault();
+  if(await vSave())toast("Senha salva no cofre online");else{if(prev)Object.assign(pwEditing,prev);else V.items.pop();renderVault()}});
+$("#eDel").onclick=async()=>{if(!confirm("Excluir esta senha para sempre?"))return;const before=V.items;V.items=V.items.filter(x=>x!==pwEditing);$("#pwDlg").close();
+  if(!await vSave())V.items=before;renderVault()};
 document.addEventListener("visibilitychange",()=>{if(document.hidden&&VK){lockVault();$("#pwDlg").open&&$("#pwDlg").close()}});
 ["click","keydown"].forEach(ev=>document.addEventListener(ev,()=>VK&&vaultTouch()));
 setTab("links");
